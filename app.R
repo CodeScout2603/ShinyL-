@@ -10,6 +10,10 @@ xWithoutLT1 = replace(x, x<1,1)
 # logarithmize x 
 xLogarithmised = log2(xWithoutLT1)
 
+
+# Anzahl ALL und AML bestimmen
+num_ALL <- sum(pData(Golub_Train)$ALL.AML == "ALL")
+num_AML <- sum(pData(Golub_Train)$ALL.AML == "AML")
 # ------------------------
 
 # RColorBrewer for better color of the heatmap
@@ -22,6 +26,9 @@ ui <- fluidPage(
   
   sidebarLayout(
     sidebarPanel(
+      h4("Anzahl Patienten"),
+      p(paste("ALL:", num_ALL)),
+      p(paste("AML:", num_AML)),
       sliderInput("numberOfGenes",
                   "Number of Genes",
                   min = 10,
