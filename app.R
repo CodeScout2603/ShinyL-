@@ -3,6 +3,7 @@ library(shiny)
 library(golubEsets)
 library(RColorBrewer)
 library(pheatmap)
+library(grid)
 
 # -------------------------
 # Daten laden
