@@ -1,7 +1,10 @@
+
 library(shiny)
 library(golubEsets)
 library(RColorBrewer)
 library(pheatmap)
+
+options(shiny.error = browser)   # <--- DEBUG-MODUS: zeigt alle Fehler
 
 # -------------------------
 # Daten laden und vorbereiten
@@ -10,26 +13,22 @@ data(Golub_Train)
 
 x <- exprs(Golub_Train)
 
-# Sample-Namen erstellen
 sample_labels <- paste(
   pData(Golub_Train)$Samples,
   pData(Golub_Train)$ALL.AML,
   sep = "_"
 )
+
 colnames(x) <- sample_labels
 
-# Log2-Transformation
 xLog <- log2(pmax(x, 1))
 
-# Patientenzahlen
 num_ALL <- sum(pData(Golub_Train)$ALL.AML == "ALL")
 num_AML <- sum(pData(Golub_Train)$ALL.AML == "AML")
 
-# Varianzberechnung
 geneVariance <- apply(xLog, 1, var)
 sortedGenes <- names(sort(geneVariance, decreasing = TRUE))
 
-# Annotation (für Spalten!)
 annotation <- data.frame(
   Leukemia = pData(Golub_Train)$ALL.AML
 )
@@ -71,7 +70,8 @@ ui <- fluidPage(
     ),
     
     mainPanel(
-      plotOutput("heatmap", height = "900px")
+      plotOutput("heatmap", height = "900px"),
+      verbatimTextOutput("debug")   # <-- DEBUG-FENSTER
     )
   )
 )
@@ -85,19 +85,30 @@ server <- function(input, output) {
     xLog[sortedGenes[1:input$numberOfGenes], , drop = FALSE]
   })
   
+  output$debug <- renderPrint({
+    list(
+      selected_genes_dim = dim(selectedGenes()),
+      colnames_match = identical(colnames(selectedGenes()), rownames(annotation)),
+      annotation_rows = rownames(annotation)[1:5],
+      matrix_cols = colnames(selectedGenes())[1:5]
+    )
+  })
+  
   output$heatmap <- renderPlot({
     
     mat <- selectedGenes()
     
-    pheatmap(
-      mat,   # << NICHT transponiert!
-      clustering_distance_rows = input$distMea,
-      clustering_distance_cols = input$distMea,
-      clustering_method = input$clustMeth,
-      annotation_col = annotation,
-      color = colorRampPalette(brewer.pal(8, "Blues"))(25),
-      fontsize = 9,
-      main = "Heatmap der Top-variablen Gene"
+    print(
+      pheatmap(
+        mat,
+        clustering_distance_rows = input$distMea,
+        clustering_distance_cols = input$distMea,
+        clustering_method = input$clustMeth,
+        annotation_col = annotation,
+        color = colorRampPalette(brewer.pal(8, "Blues"))(25),
+        fontsize = 9,
+        main = "Heatmap der Top-variablen Gene"
+      )
     )
   })
 }
