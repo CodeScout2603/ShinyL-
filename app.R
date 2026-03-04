@@ -69,4 +69,4 @@ server <- function(input, output) {
 }
 
 # Generate the app
-shinyApp(ui, server
+shinyApp(ui, server)
