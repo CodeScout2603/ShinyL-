@@ -1,5 +1,4 @@
 
-# benötigte Pakete
 library(shiny)
 library(golubEsets)
 library(RColorBrewer)
@@ -12,32 +11,33 @@ data(Golub_Train)
 
 x <- exprs(Golub_Train)
 
-# Sample-Namen schöner gestalten
-colnames(x) <- paste(
-  pData(Golub_Train)$Samples, 
-  pData(Golub_Train)$ALL.AML, 
+# Sample-Namen anpassen
+sample_labels <- paste(
+  pData(Golub_Train)$Samples,
+  pData(Golub_Train)$ALL.AML,
   sep = "_"
 )
+colnames(x) <- sample_labels
 
-# Werte < 1 auf 1 setzen und log2 transformieren
+# Log2-Transformation mit pmax (sicher und schnell)
 xLog <- log2(pmax(x, 1))
 
-# Patientenzahlen bestimmen
+# Patientenzahlen
 num_ALL <- sum(pData(Golub_Train)$ALL.AML == "ALL")
 num_AML <- sum(pData(Golub_Train)$ALL.AML == "AML")
 
-# Varianz der Gene einmalig berechnen (Performance!)
+# Varianz der Gene berechnen
 geneVariance <- apply(xLog, 1, var)
 sortedGenes <- names(sort(geneVariance, decreasing = TRUE))
 
-# Annotation für Heatmap
+# Annotation für Samples (Spalten!)
 annotation <- data.frame(
-  Type = pData(Golub_Train)$ALL.AML
+  Leukemia = pData(Golub_Train)$ALL.AML
 )
-rownames(annotation) <- colnames(xLog)
+rownames(annotation) <- sample_labels
 
 # -------------------------
-# UI Definition
+# UI
 # -------------------------
 ui <- fluidPage(
   
@@ -72,38 +72,37 @@ ui <- fluidPage(
     ),
     
     mainPanel(
-      plotOutput("heatmap", height = reactive({ input$numberOfGenes * 18 }))
+      plotOutput("heatmap", height = "900px")
     )
   )
 )
 
 # -------------------------
-# Server Logik
+# Server
 # -------------------------
 server <- function(input, output) {
   
-  # reaktive Auswahl der variabelsten Gene
   selectedGenes <- reactive({
-    xLog[sortedGenes[1:input$numberOfGenes], ]
+    xLog[sortedGenes[1:input$numberOfGenes], , drop = FALSE]
   })
   
   output$heatmap <- renderPlot({
     
-    tx <- t(selectedGenes())
+    mat <- selectedGenes()
+    mat_t <- t(mat)
     
-    # Validierung: binary Distanz benötigt binäre Matrix
+    # Validierung für binary Distanz
     validate(
-      need(!(input$distMea == "binary" && !all(tx %in% c(0, 1))),
-           "Binary distance erfordert binäre Daten (0/1).")
+      need(!(input$distMea == "binary" && !all(mat_t %in% c(0, 1))),
+           "Binary distance braucht 0/1 Daten.")
     )
     
-    # Heatmap zeichnen
     pheatmap(
-      tx,
+      mat_t,
       clustering_distance_rows = input$distMea,
       clustering_distance_cols = input$distMea,
       clustering_method = input$clustMeth,
-      annotation_row = annotation,
+      annotation_col = annotation,   # <- KORREKT! (Samples = columns)
       color = colorRampPalette(brewer.pal(8, "Blues"))(25),
       fontsize = 9,
       main = "Heatmap der Top-variablen Gene"
@@ -111,5 +110,5 @@ server <- function(input, output) {
   })
 }
 
-# Shiny App starten
+# App starten
 shinyApp(ui, server)
