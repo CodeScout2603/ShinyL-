@@ -22,7 +22,7 @@ genes <- data.frame(
     '<a href="https://www.ncbi.nlm.nih.gov/gene/?term=',
     sort(rownames(x)),
     '" target="_blank">',
-    sort(rownames(x)),
+    sub("_at$", "", sort(rownames(x))),
     '</a>'
   )
 )
