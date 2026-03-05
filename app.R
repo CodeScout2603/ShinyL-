@@ -62,8 +62,12 @@ ui <- fluidPage(
       ),
       br(), 
       br(),
-      box( width = 12,
-                    DTOutput('geneTable'))
+     
+      div(
+        style = "border: 1px solid #ddd; padding: 10px; border-radius: 6px;",
+        DTOutput("geneTable")
+      )
+
      
     ),
     
