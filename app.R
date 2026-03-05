@@ -16,17 +16,19 @@ colnames(x) <- paste(pData(Golub_Train)$Samples, pData(Golub_Train)$ALL.AML, sep
 x[x < 1] <- 1
 xLogarithmised <- log2(x)
 
-cleanGenes <- sub("_[^_]+$", "", sort(rownames(x)))
+
+cleanGenes <- sub("_.*$", "", sort(rownames(x)))
 
 genes <- data.frame(
   Gene = paste0(
     '<a href="https://www.ncbi.nlm.nih.gov/gene/?term=',
-    sort(rownames(x)),
+    cleanGenes,
     '" target="_blank">',
-    sub("_at$", "", sort(rownames(x))),
+    cleanGenes,
     '</a>'
   )
 )
+
 
 num_ALL <- sum(pData(Golub_Train)$ALL.AML == "ALL")
 num_AML <- sum(pData(Golub_Train)$ALL.AML == "AML")
