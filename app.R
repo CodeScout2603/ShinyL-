@@ -16,7 +16,16 @@ colnames(x) <- paste(pData(Golub_Train)$Samples, pData(Golub_Train)$ALL.AML, sep
 x[x < 1] <- 1
 xLogarithmised <- log2(x)
 
-genes <- data.frame(Gene = sort(rownames(x)))
+
+genes <- data.frame(
+  Gene = paste0(
+    '<a href="https://www.ncbi.nlm.nih.gov/gene/?term=',
+    sort(rownames(x)),
+    '" target="_blank">',
+    sort(rownames(x)),
+    '</a>'
+  )
+)
 
 num_ALL <- sum(pData(Golub_Train)$ALL.AML == "ALL")
 num_AML <- sum(pData(Golub_Train)$ALL.AML == "AML")
@@ -63,7 +72,6 @@ ui <- fluidPage(
       br(), br(),
 
       h4("🧬 Genliste"),
-      textInput("searchGene", "Gen suchen:", placeholder = "z.B. M12123"),
       div(style = "border: 1px solid #ddd; padding: 10px; border-radius: 6px;",
           DTOutput("geneTable"))
     ),
@@ -100,15 +108,9 @@ server <- function(input, output) {
   })
 
   output$geneTable <- renderDT({
-    
-   
- # Filter anwenden
-  filtered <- genes[
-    grepl(input$searchGene, genes$Gene, ignore.case = TRUE),
-  ]
-  
-  datatable(
+    datatable(
       genes,
+      escape = FALSE,   # << NICHT VERGESSEN! HTML erlauben
       options = list(
         pageLength = 8,
         autoWidth = TRUE,
