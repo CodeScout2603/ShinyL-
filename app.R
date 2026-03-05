@@ -63,6 +63,7 @@ ui <- fluidPage(
       br(), br(),
 
       h4("🧬 Genliste"),
+      textInput("searchGene", "Gen suchen:", placeholder = "z.B. M12123"),
       div(style = "border: 1px solid #ddd; padding: 10px; border-radius: 6px;",
           DTOutput("geneTable"))
     ),
@@ -99,7 +100,14 @@ server <- function(input, output) {
   })
 
   output$geneTable <- renderDT({
-    datatable(
+    
+   
+ # Filter anwenden
+  filtered <- genes[
+    grepl(input$searchGene, genes$Gene, ignore.case = TRUE),
+  ]
+  
+  datatable(
       genes,
       options = list(
         pageLength = 8,
