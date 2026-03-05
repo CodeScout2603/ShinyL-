@@ -61,7 +61,9 @@ ui <- fluidPage(
         "🔗 Mein Code auf GitHub"
       ),
       br(), 
-      br()
+      br(),
+      box( width = 12,
+                    DTOutput('geneTable'))
      
     ),
     
