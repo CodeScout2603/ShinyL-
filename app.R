@@ -72,13 +72,13 @@ ui <- fluidPage(
       )
 
      
-    ),
+    
     
     mainPanel(
       plotOutput("heatmap", height = 900)
     )
-  )
-)
+  
+
 
 # server logic unit
 server <- function(input, output) {
