@@ -1,5 +1,4 @@
-layout(matrix(c(1,2), nrow=2), heights = c(8,1))
-par(mar = c(2, 8, 4, 2))
+
 library(shiny)
 library(golubEsets)
 library(RColorBrewer)
@@ -171,15 +170,6 @@ output$heatmap <- renderPlot({
     labCol = FALSE    # << verhindert doppelte/überlappende Spaltenlabels
   )
 
-  # (1) Genau EIN Y-Achsentitel (links, nah an der Heatmap)
-  mtext("Gene (Top-Varianz-Auswahl)", side = 2, line = 4, cex = 1.1)
-
-  # Panel 2: Nur für den X-Achsentitel (sauber unter der Heatmap)
-  par(mar = c(5, 2, 1, 2))
-  plot.new()
-
-  # (2) Genau EIN X-Achsentitel (unten, zentriert)
-  mtext("Patienten (Samples mit ALL/AML-Diagnose)", side = 1, line = 2, cex = 1.1)
   })
 
 output$geneTable <- renderDT({
