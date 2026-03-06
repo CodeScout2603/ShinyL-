@@ -168,22 +168,14 @@ output$heatmap <- renderPlot({
     distfun = function(c) dist(c, method = input$distMea),
     hclustfun = function(c) hclust(c, method = input$clustMeth),
     col = colorRampPalette(brewer.pal(8, "Blues"))(25),
-    xlab="gene mit höchster varianz",
+
     ylab="patienten"
   )
-
-  
-  # X-Achsentitel (rechts)
-  mtext("Patienten (Samples mit ALL/AML-Diagnose)",
-        side = 4,          # rechts
-        line = 3,          # wie weit nach unten
-        outer = TRUE,      # IM Plotfenster, aber außerhalb der Heatmap
-        cex = 1.2)
 
   # Y-Achsentitel (unten)
   mtext("Gene (Top-Varianz)",
         side = 1,          # unten
-        line = 3,
+        line = 5,
         outer = TRUE,
         cex = 1.2)
 })
