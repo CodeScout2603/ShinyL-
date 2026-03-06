@@ -157,7 +157,7 @@ output$heatmap <- renderPlot({
   tx <- t(selectedGenes())
 
   # Layout: Panel 1 = Heatmap, Panel 2 = X-Achsen-Titel
-  layout(matrix(c(1, 2), nrow = 2, byrow = TRUE), heights = c(8, 1))
+  #layout(matrix(c(1, 2), nrow = 2, byrow = TRUE), heights = c(8, 1))
 
   # Panel 1: Heatmap + linker Rand für Y-Titel
   par(mar = c(5, 8, 4, 2))
