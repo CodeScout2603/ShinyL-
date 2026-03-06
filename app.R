@@ -166,8 +166,8 @@ output$heatmap <- renderPlot({
     distfun = function(c) dist(c, method = input$distMea),
     hclustfun = function(c) hclust(c, method = input$clustMeth),
     col = colorRampPalette(brewer.pal(8, "Blues"))(25),
-    labRow = FALSE,   # << verhindert doppelte/überlappende Zeilenlabels
-    labCol = FALSE    # << verhindert doppelte/überlappende Spaltenlabels
+    xlab="gene mit höchster varianz",
+    ylab="patienten"
   )
 
   })
